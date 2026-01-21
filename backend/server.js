@@ -12,8 +12,12 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('Conectado a MongoDB Atlas'))
     .catch(err => console.error(err));
 
+/* 🔹 Ruta raíz para ver algo funcionando */
+app.get('/', (req, res) => {
+    res.send('API ReverseBuild funcionando correctamente');
+});
 
-app.use('/api/auth', require('./routes/auth'));    
+app.use('/api/auth', require('./routes/auth'));
 app.use('/api/services', require('./routes/services'));
 
 const PORT = process.env.PORT || 3000;
