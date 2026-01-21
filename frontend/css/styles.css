@@ -1,0 +1,42 @@
+body {
+    background-color: #121212; /* Dark Mode Fondo */
+    color: #e0e0e0; /* Texto claro */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 480px; /* Ancho de móvil */
+    margin: 0 auto;
+}
+
+input, button, select {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+}
+
+button {
+    background-color: #bb86fc; /* Color primario violeta */
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.card {
+    background-color: #1e1e1e;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border-left: 5px solid #03dac6; /* Acento teal */
+}
+
+img.preview {
+    width: 100%;
+    border-radius: 5px;
+    margin-top: 5px;
+}
