@@ -1,6 +1,5 @@
 const API_URL = '/api/services';
 
-// ✅ ESTA es tu función que ya funciona: NO LA TOCAMOS
 async function crearServicio() {
     const token = localStorage.getItem('token');
 
@@ -10,7 +9,6 @@ async function crearServicio() {
         return;
     }
 
-    // Datos iniciales (pueden venir de un formulario después)
     const cliente = {
         rut: '12.345.678-9',
         nombre: 'Empresa Demo'
@@ -40,10 +38,10 @@ async function crearServicio() {
 
         const data = await response.json();
 
-        // ✅ CLAVE PARA QUE FUNCIONE TODO
+        
         localStorage.setItem('serviceId', data._id);
 
-        // 👉 Ahora sí
+        
         window.location.href = 'service.html';
 
     } catch (error) {
@@ -52,7 +50,6 @@ async function crearServicio() {
     }
 }
 
-// ✅ NUEVA FUNCIÓN: ver guía de rearme por ID escrito en el dashboard
 async function verRearme() {
     const input = document.getElementById('serviceId');
     const serviceId = input.value.trim();
