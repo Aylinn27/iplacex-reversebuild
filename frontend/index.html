@@ -38,7 +38,7 @@
             const password = document.getElementById('password').value;
 
             try {
-                const res = await fetch(`${API_URL}/login`, {
+                const res = await fetch('/api/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
@@ -67,7 +67,7 @@
             const email = prompt("Email nuevo:");
             const password = prompt("Contraseña nueva:");
             if(email && password) {
-                const res = await fetch(`${API_URL}/register`, {
+                const res = await fetch('/api/auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
