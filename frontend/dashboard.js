@@ -1,49 +1,53 @@
 const API_URL = '/api/services';
 
-async function verRearme() {
-    const serviceId = document.getElementById('serviceId').value;
+async function crearServicio() {
     const token = localStorage.getItem('token');
 
-    if (!serviceId) {
-        alert('Debe ingresar el ID del servicio');
+    if (!token) {
+        alert('Sesión expirada');
+        window.location.href = 'index.html';
         return;
     }
 
+    // Datos iniciales (pueden venir de un formulario después)
+    const cliente = {
+        rut: '12.345.678-9',
+        nombre: 'Empresa Demo'
+    };
+
+    const equipo = {
+        tipo: 'Notebook',
+        sn: 'NB-REV-001'
+    };
+
     try {
-        const res = await fetch(`${API_URL}/${serviceId}/rearme`, {
-            method: 'GET',
+        const response = await fetch(API_URL, {
+            method: 'POST',
             headers: {
+                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            body: JSON.stringify({ cliente, equipo })
         });
 
-        if (!res.ok) {
-            const err = await res.text();
+        if (!response.ok) {
+            const err = await response.text();
             console.error(err);
-            alert('No se pudo obtener la guía de rearme');
+            alert('Error al crear el servicio');
             return;
         }
 
-        const data = await res.json();
-        const lista = document.getElementById('listaPasos');
-        lista.innerHTML = '<h3>⬇️ GUÍA DE REARME (INVERSA) ⬇️</h3>';
+        const data = await response.json();
 
-        if (!data.pasos || data.pasos.length === 0) {
-            lista.innerHTML += '<p>No hay pasos registrados.</p>';
-            return;
-        }
+        // ✅ CLAVE PARA QUE FUNCIONE TODO
+        localStorage.setItem('serviceId', data._id);
 
-        data.pasos.forEach(paso => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <strong>Paso ${paso.ord}:</strong> ${paso.desc}
-                ${paso.img ? `<br><img src="${paso.img}" width="200">` : ''}
-            `;
-            lista.appendChild(li);
-        });
+        // 👉 Ahora sí
+        window.location.href = 'service.html';
 
     } catch (error) {
         console.error(error);
-        alert('Error inesperado al generar la guía');
+        alert('Error de conexión con el servidor');
     }
 }
+
