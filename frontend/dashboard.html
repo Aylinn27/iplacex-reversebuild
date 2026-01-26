@@ -21,10 +21,10 @@
         <p>Bienvenido a <strong>Soluciones S.A.</strong></p>
         <hr style="border-color: #333;">
 
-        <!-- Tarjetas -->
+        <!-- TARJETAS -->
         <div style="margin-top: 30px;">
 
-            <!-- NUEVO SERVICIO (MODIFICADO) -->
+            <!-- NUEVO SERVICIO -->
             <div class="card"
                  onclick="crearServicio()"
                  style="cursor: pointer; text-align: center; padding: 30px;">
@@ -35,7 +35,7 @@
 
             <!-- HISTORIAL -->
             <div class="card"
-                 style="cursor: not-allowed; text-align: center; padding: 30px; opacity: 0.5;">
+                style="cursor: not-allowed; text-align: center; padding: 30px; opacity: 0.5;">
                 <h1 style="margin: 0;">📂</h1>
                 <h3>Historial</h3>
                 <p>(Módulo en construcción)</p>
@@ -43,7 +43,7 @@
 
             <!-- CONFIGURACIÓN -->
             <div class="card"
-                 style="cursor: not-allowed; text-align: center; padding: 30px; opacity: 0.5;">
+                style="cursor: not-allowed; text-align: center; padding: 30px; opacity: 0.5;">
                 <h1 style="margin: 0;">⚙️</h1>
                 <h3>Configuración</h3>
                 <p>Gestionar plantillas</p>
@@ -53,27 +53,28 @@
 
         <hr style="border-color: #333; margin-top: 30px;">
 
-        <!-- GUÍA DE REARME -->
+        <!-- GUIA REARME -->
         <h3>🔁 Generar Guía de Rearme</h3>
 
-        <input
-            type="text"
-            id="serviceId"
+        <input 
+            id="serviceId" 
             placeholder="Ingrese ID del servicio"
-            style="width: 100%; margin-bottom: 10px;"
+            style="width:100%; margin-bottom:10px;"
         >
 
-        <button onclick="verRearme()">Ver Guía de Rearme</button>
+        <button id="btnRearme" style="width:100%; margin-bottom:10px;">
+            Ver Guía de Rearme
+        </button>
 
-        <ul id="listaPasos" style="margin-top: 20px;"></ul>
+        <ul id="listaPasos" style="margin-top:20px;"></ul>
 
     </div>
 
-    <!-- JS principal del dashboard -->
-    <script src="dashboard.js"></script>
+    <!-- Script principal del dashboard -->
+    <script src="js/dashboard.js"></script>
 
-    <!-- Seguridad básica de sesión -->
     <script>
+        // Seguridad simple de sesión
         const token = localStorage.getItem('token');
         if (!token) {
             window.location.href = 'index.html';
@@ -81,11 +82,10 @@
 
         function logout() {
             localStorage.removeItem('token');
-            localStorage.removeItem('currentServiceId');
+            localStorage.removeItem('serviceId');
             window.location.href = 'index.html';
         }
     </script>
 
 </body>
 </html>
-
