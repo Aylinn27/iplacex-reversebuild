@@ -1,5 +1,6 @@
 const API_URL = '/api/services';
 
+
 function getServiceId() {
     return localStorage.getItem('serviceId');
 }
@@ -13,7 +14,7 @@ const convertToBase64 = (file) => {
     });
 };
 
-// Mostrar ID del servicio activo (debug + evidencia)
+
 document.addEventListener('DOMContentLoaded', () => {
     const serviceId = getServiceId();
     const info = document.getElementById('serviceInfo');
@@ -26,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     info.innerText = `Servicio activo ID: ${serviceId}`;
 });
+
 
 async function agregarPaso() {
     const desc = document.getElementById('descPaso').value;
@@ -69,6 +71,7 @@ async function agregarPaso() {
     fileInput.value = '';
 }
 
+
 async function activarRearme() {
     const serviceId = getServiceId();
 
@@ -92,4 +95,37 @@ async function activarRearme() {
 }
 
 
+async function finalizarServicio() {
+    const id = getServiceId();
+    if (!id) {
+        alert('No hay servicio activo');
+        return;
+    }
 
+    const confirmacion = confirm('¿Está seguro que desea finalizar el servicio?');
+    if (!confirmacion) return;
+
+    try {
+        const res = await fetch(`${API_URL}/${id}/finalizar`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (!res.ok) {
+            const err = await res.text();
+            console.error(err);
+            alert('Error al finalizar el servicio');
+            return;
+        }
+
+        const data = await res.json();
+        alert('Servicio finalizado 🚀');
+
+        localStorage.removeItem('serviceId');
+        window.location.href = 'dashboard.html';
+
+    } catch (error) {
+        console.error(error);
+        alert('Error de conexión con el servidor');
+    }
+}
