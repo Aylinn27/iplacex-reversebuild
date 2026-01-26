@@ -30,7 +30,7 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:3000/api/auth';
+        fetch('/api/auth/login')
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
