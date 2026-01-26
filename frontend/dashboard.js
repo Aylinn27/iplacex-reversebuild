@@ -1,42 +1,43 @@
 const API_URL = '/api/services';
 
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('[Dashboard] Cargado');
+
+    const btn = document.getElementById('btnRearme');
+    btn.addEventListener('click', verRearme);
+});
+
 async function verRearme() {
-    const serviceIdInput = document.getElementById('serviceId');
-    const serviceId = serviceIdInput.value.trim();
+    const serviceId = document.getElementById('serviceId').value.trim();
 
     if (!serviceId) {
-        alert('Debe ingresar el ID del servicio');
-        serviceIdInput.focus();
+        alert('Debe ingresar un ID');
         return;
     }
 
-    console.log('[Dashboard] Buscando rearme para ID:', serviceId);
+    console.log('[Dashboard] Consultando rearme ID:', serviceId);
 
     try {
-        // 👉 Igual que en service.html: SIN token, solo GET simple
         const res = await fetch(`${API_URL}/${serviceId}/rearme`);
 
         if (!res.ok) {
-            const errText = await res.text();
-            console.error('[Dashboard] Error HTTP:', res.status, errText);
-            alert('No se pudo obtener la guía de rearme (revise consola del navegador).');
+            alert('No existe el servicio o no tiene pasos aún');
+            console.error('HTTP', res.status);
             return;
         }
 
         const data = await res.json();
-        console.log('[Dashboard] Datos recibidos:', data);
-
         const lista = document.getElementById('listaPasos');
+
         lista.innerHTML = '<h3>⬇️ GUÍA DE REARME (INVERSA) ⬇️</h3>';
 
         if (!data.pasos || data.pasos.length === 0) {
-            lista.innerHTML += '<p>No hay pasos registrados para este servicio.</p>';
+            lista.innerHTML += '<p>No hay pasos registrados.</p>';
             return;
         }
 
         data.pasos.forEach(paso => {
             const li = document.createElement('li');
-            li.style.marginBottom = '10px';
             li.innerHTML = `
                 <strong>Paso ${paso.ord}:</strong> ${paso.desc}
                 ${paso.img ? `<br><img src="${paso.img}" width="200">` : ''}
@@ -44,9 +45,9 @@ async function verRearme() {
             lista.appendChild(li);
         });
 
-    } catch (error) {
-        console.error('[Dashboard] Error inesperado:', error);
-        alert('Error inesperado al generar la guía (ver consola).');
+    } catch (err) {
+        console.error(err);
+        alert('Error inesperado al obtener rearme');
     }
 }
 
