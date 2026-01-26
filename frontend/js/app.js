@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/api/services';
+const API_URL = '/api/services';
 let currentServiceId = 'ID_DEL_SERVICIO_CREADO_MANUALMENTE_PARA_TEST'; 
 const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
