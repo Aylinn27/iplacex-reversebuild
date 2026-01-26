@@ -12,6 +12,7 @@ router.post('/', async (req, res) => {
     }
 });
 
+
 router.post('/:id/pasos', async (req, res) => {
     try {
         if (!req.body.desc) {
@@ -40,6 +41,7 @@ router.post('/:id/pasos', async (req, res) => {
     }
 });
 
+
 router.get('/:id/rearme', async (req, res) => {
     try {
         const service = await Service.findById(req.params.id);
@@ -55,4 +57,27 @@ router.get('/:id/rearme', async (req, res) => {
     }
 });
 
+router.patch('/:id/finalizar', async (req, res) => {
+    try {
+        const service = await Service.findById(req.params.id);
+
+        if (!service) {
+            return res.status(404).json({ msg: 'Servicio no encontrado' });
+        }
+
+        service.estado = 'Finalizado';
+        await service.save();
+
+        res.json({
+            msg: 'Servicio finalizado correctamente',
+            service
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: 'Error al finalizar servicio' });
+    }
+});
+
 module.exports = router;
+
