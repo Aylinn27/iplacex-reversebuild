@@ -9,12 +9,10 @@ const app = express();
 app.use(express.json({ limit: '10mb' }));
 app.use(cors());
 
-// 👉 Servir frontend estático
-app.use(express.static(path.join(__dirname, '../frontend')));
+app.use(express.static(path.join(dirname, 'frontend')));
 
-// 👉 Ruta raíz → index.html
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+  res.sendFile(path.join(dirname, 'frontend', 'index.html'));
 });
 
 // Conexión a MongoDB
