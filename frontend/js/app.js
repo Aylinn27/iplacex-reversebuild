@@ -1,16 +1,9 @@
-// ================================
-// CONFIGURACIÓN GENERAL
-// ================================
 const API_URL = '/api/services';
 
-// Obtiene el ID del servicio desde el input
 function getServiceId() {
-    return document.getElementById('serviceId').value.trim();
+    return localStorage.getItem('serviceId');
 }
 
-// ================================
-// CONVERSIÓN IMAGEN A BASE64
-// ================================
 const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -20,99 +13,69 @@ const convertToBase64 = (file) => {
     });
 };
 
-// ================================
-// AGREGAR PASO (DESARME)
-// ================================
+// Mostrar ID del servicio activo (debug + evidencia)
+document.addEventListener('DOMContentLoaded', () => {
+    const serviceId = getServiceId();
+    const info = document.getElementById('serviceInfo');
+
+    if (!serviceId) {
+        alert('No hay servicio activo. Vuelve al dashboard.');
+        window.location.href = 'dashboard.html';
+        return;
+    }
+
+    info.innerText = `Servicio activo ID: ${serviceId}`;
+});
+
 async function agregarPaso() {
-    const desc = document.getElementById('descPaso').value.trim();
+    const desc = document.getElementById('descPaso').value;
     const fileInput = document.getElementById('fotoPaso');
     const token = localStorage.getItem('token');
     const serviceId = getServiceId();
 
-    // --- VALIDACIONES ---
-    if (!serviceId) {
-        alert('Debe ingresar el ID del servicio');
-        return;
-    }
-
     if (!desc) {
-        alert('Debe escribir una descripción del paso');
+        alert('Debe escribir una descripción');
         return;
     }
 
-    if (!token) {
-        alert('Sesión expirada. Inicie sesión nuevamente.');
+    if (!serviceId) {
+        alert('Servicio no válido');
         return;
     }
 
-    // --- IMAGEN ---
     let imgBase64 = '';
     if (fileInput.files.length > 0) {
         imgBase64 = await convertToBase64(fileInput.files[0]);
     }
 
-    // --- REQUEST ---
     const response = await fetch(`${API_URL}/${serviceId}/pasos`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-            desc: desc,
-            img: imgBase64
-        })
+        body: JSON.stringify({ desc, img: imgBase64 })
     });
 
-    // --- MANEJO DE ERRORES ---
     if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error backend:', errorText);
-        alert('Error al guardar el paso. Revisa la consola.');
+        const err = await response.text();
+        console.error(err);
+        alert('Error al guardar paso');
         return;
     }
 
     alert('Paso guardado correctamente ✅');
-
-    // Limpia formulario
     document.getElementById('descPaso').value = '';
-    document.getElementById('fotoPaso').value = '';
-
-    // Actualiza la guía sin recargar
-    activarRearme();
+    fileInput.value = '';
 }
 
-// ================================
-// MOSTRAR GUÍA DE REARME (INVERSA)
-// ================================
 async function activarRearme() {
     const serviceId = getServiceId();
-    const token = localStorage.getItem('token');
 
-    if (!serviceId) {
-        alert('Debe ingresar el ID del servicio');
-        return;
-    }
-
-    if (!token) {
-        alert('Sesión expirada. Inicie sesión nuevamente.');
-        return;
-    }
-
-    const response = await fetch(`${API_URL}/${serviceId}/rearme`, {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    });
-
-    if (!response.ok) {
-        alert('No se pudo generar la guía de rearme');
-        return;
-    }
-
+    const response = await fetch(`${API_URL}/${serviceId}/rearme`);
     const data = await response.json();
-    const lista = document.getElementById('listaPasos');
 
+    const lista = document.getElementById('listaPasos');
     lista.innerHTML = '<h3>⬇️ GUÍA DE REARME (INVERSA) ⬇️</h3>';
 
     data.pasos.forEach(paso => {
@@ -121,12 +84,12 @@ async function activarRearme() {
                 <p><strong>Paso ${paso.ord}</strong></p>
                 <p>${paso.desc}</p>
                 ${paso.img ? `<img src="${paso.img}" class="preview">` : ''}
-                <label>
-                    <input type="checkbox"> Completado
-                </label>
             </div>
         `;
     });
+
+    document.getElementById('formDesarme').style.display = 'none';
 }
+
 
 
