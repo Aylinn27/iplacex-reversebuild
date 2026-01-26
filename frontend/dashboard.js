@@ -1,6 +1,5 @@
 const API_URL = '/api/services';
 
-
 async function crearServicio() {
     const token = localStorage.getItem('token');
 
@@ -10,7 +9,7 @@ async function crearServicio() {
         return;
     }
 
-    // Datos demo (pueden venir de un formulario más adelante)
+    // Datos iniciales (pueden venir de un formulario después)
     const cliente = {
         rut: '12.345.678-9',
         nombre: 'Empresa Demo'
@@ -33,73 +32,21 @@ async function crearServicio() {
 
         if (!response.ok) {
             const err = await response.text();
-            console.error('[Dashboard] Error al crear servicio:', err);
+            console.error(err);
             alert('Error al crear el servicio');
             return;
         }
 
         const data = await response.json();
 
-        // 🔑 Guardar ID REAL del servicio
-        localStorage.setItem('currentServiceId', data._id);
+        // ✅ CLAVE PARA QUE FUNCIONE TODO
+        localStorage.setItem('serviceId', data._id);
 
-        // Redirigir a la pantalla de servicio
+        // 👉 Ahora sí
         window.location.href = 'service.html';
 
     } catch (error) {
-        console.error('[Dashboard] Error de conexión:', error);
+        console.error(error);
         alert('Error de conexión con el servidor');
-    }
-}
-
-/**
- * Ver guía de rearme desde un ID ingresado manualmente
- */
-async function verRearme() {
-    const serviceIdInput = document.getElementById('serviceId');
-    const serviceId = serviceIdInput.value.trim();
-
-    if (!serviceId) {
-        alert('Debe ingresar el ID del servicio');
-        serviceIdInput.focus();
-        return;
-    }
-
-    console.log('[Dashboard] Consultando rearme para ID:', serviceId);
-
-    try {
-        const res = await fetch(`${API_URL}/${serviceId}/rearme`);
-
-        if (!res.ok) {
-            const errText = await res.text();
-            console.error('[Dashboard] Error HTTP:', res.status, errText);
-            alert('No se pudo obtener la guía de rearme. Verifique el ID.');
-            return;
-        }
-
-        const data = await res.json();
-        console.log('[Dashboard] Datos rearme:', data);
-
-        const lista = document.getElementById('listaPasos');
-        lista.innerHTML = '<h3>⬇️ GUÍA DE REARME (INVERSA) ⬇️</h3>';
-
-        if (!data.pasos || data.pasos.length === 0) {
-            lista.innerHTML += '<p>No hay pasos registrados para este servicio.</p>';
-            return;
-        }
-
-        data.pasos.forEach(paso => {
-            const li = document.createElement('li');
-            li.style.marginBottom = '10px';
-            li.innerHTML = `
-                <strong>Paso ${paso.ord}:</strong> ${paso.desc}
-                ${paso.img ? `<br><img src="${paso.img}" width="200">` : ''}
-            `;
-            lista.appendChild(li);
-        });
-
-    } catch (error) {
-        console.error('[Dashboard] Error inesperado:', error);
-        alert('Error inesperado al generar la guía. Revise la consola.');
     }
 }
