@@ -1,53 +1,52 @@
 const API_URL = '/api/services';
 
-async function crearServicio() {
-    const token = localStorage.getItem('token');
+async function verRearme() {
+    const serviceIdInput = document.getElementById('serviceId');
+    const serviceId = serviceIdInput.value.trim();
 
-    if (!token) {
-        alert('Sesión expirada');
-        window.location.href = 'index.html';
+    if (!serviceId) {
+        alert('Debe ingresar el ID del servicio');
+        serviceIdInput.focus();
         return;
     }
 
-    // Datos iniciales (pueden venir de un formulario después)
-    const cliente = {
-        rut: '12.345.678-9',
-        nombre: 'Empresa Demo'
-    };
-
-    const equipo = {
-        tipo: 'Notebook',
-        sn: 'NB-REV-001'
-    };
+    console.log('[Dashboard] Buscando rearme para ID:', serviceId);
 
     try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ cliente, equipo })
-        });
+        // 👉 Igual que en service.html: SIN token, solo GET simple
+        const res = await fetch(`${API_URL}/${serviceId}/rearme`);
 
-        if (!response.ok) {
-            const err = await response.text();
-            console.error(err);
-            alert('Error al crear el servicio');
+        if (!res.ok) {
+            const errText = await res.text();
+            console.error('[Dashboard] Error HTTP:', res.status, errText);
+            alert('No se pudo obtener la guía de rearme (revise consola del navegador).');
             return;
         }
 
-        const data = await response.json();
+        const data = await res.json();
+        console.log('[Dashboard] Datos recibidos:', data);
 
-        // ✅ CLAVE PARA QUE FUNCIONE TODO
-        localStorage.setItem('serviceId', data._id);
+        const lista = document.getElementById('listaPasos');
+        lista.innerHTML = '<h3>⬇️ GUÍA DE REARME (INVERSA) ⬇️</h3>';
 
-        // 👉 Ahora sí
-        window.location.href = 'service.html';
+        if (!data.pasos || data.pasos.length === 0) {
+            lista.innerHTML += '<p>No hay pasos registrados para este servicio.</p>';
+            return;
+        }
+
+        data.pasos.forEach(paso => {
+            const li = document.createElement('li');
+            li.style.marginBottom = '10px';
+            li.innerHTML = `
+                <strong>Paso ${paso.ord}:</strong> ${paso.desc}
+                ${paso.img ? `<br><img src="${paso.img}" width="200">` : ''}
+            `;
+            lista.appendChild(li);
+        });
 
     } catch (error) {
-        console.error(error);
-        alert('Error de conexión con el servidor');
+        console.error('[Dashboard] Error inesperado:', error);
+        alert('Error inesperado al generar la guía (ver consola).');
     }
 }
 
