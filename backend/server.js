@@ -9,7 +9,7 @@ const app = express();
 app.use(express.json({ limit: '10mb' }));
 app.use(cors());
 
-app.use(express.static(path.join(dirname, 'frontend')));
+app.use(express.static(path.join(__dirname, 'frontend')));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(dirname, 'frontend', 'index.html'));
