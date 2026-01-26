@@ -1,5 +1,6 @@
 const API_URL = '/api/services';
 
+
 async function crearServicio() {
     const token = localStorage.getItem('token');
 
@@ -9,7 +10,7 @@ async function crearServicio() {
         return;
     }
 
-    // Datos demo (más adelante podrías pedirlos por formulario)
+    // Datos demo (pueden venir de un formulario más adelante)
     const cliente = {
         rut: '12.345.678-9',
         nombre: 'Empresa Demo'
@@ -39,10 +40,10 @@ async function crearServicio() {
 
         const data = await response.json();
 
-        // 🔑 Guardamos el ID para usarlo en service.html
-        localStorage.setItem('serviceId', data._id);
+        // 🔑 Guardar ID REAL del servicio
+        localStorage.setItem('currentServiceId', data._id);
 
-        // Ir a la pantalla de desarme
+        // Redirigir a la pantalla de servicio
         window.location.href = 'service.html';
 
     } catch (error) {
@@ -52,7 +53,7 @@ async function crearServicio() {
 }
 
 /**
- * Ver guía de rearme desde un ID ingresado en el dashboard
+ * Ver guía de rearme desde un ID ingresado manualmente
  */
 async function verRearme() {
     const serviceIdInput = document.getElementById('serviceId');
@@ -67,13 +68,12 @@ async function verRearme() {
     console.log('[Dashboard] Consultando rearme para ID:', serviceId);
 
     try {
-        // Igual que en service.html: GET simple
         const res = await fetch(`${API_URL}/${serviceId}/rearme`);
 
         if (!res.ok) {
             const errText = await res.text();
             console.error('[Dashboard] Error HTTP:', res.status, errText);
-            alert('No se pudo obtener la guía de rearme. Revise que el ID exista.');
+            alert('No se pudo obtener la guía de rearme. Verifique el ID.');
             return;
         }
 
@@ -103,11 +103,3 @@ async function verRearme() {
         alert('Error inesperado al generar la guía. Revise la consola.');
     }
 }
-
-// Cuando cargue el dashboard, enganchar el botón de rearme
-document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('btnRearme');
-    if (btn) {
-        btn.addEventListener('click', verRearme);
-    }
-});
