@@ -5,6 +5,9 @@ require('dotenv').config();
 
 const app = express();
 
+// Servir frontend estático
+app.use(express.static(path.join(__dirname, '../frontend')));
+
 app.use(express.json({ limit: '10mb' }));
 app.use(cors());
 
