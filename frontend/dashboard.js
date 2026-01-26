@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/api/services';
+const API_URL = '/api/services';
 
 async function verRearme() {
     const serviceId = document.getElementById('serviceId').value;
