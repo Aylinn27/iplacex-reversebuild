@@ -1,6 +1,6 @@
-const API_URL = '/api/services'; 
+const API_URL = '/api/services';
 
-let ultimaGuia = null;
+let ultimaGuia = null; 
 
 function getServiceId() {
   const params = new URLSearchParams(window.location.search);
@@ -66,6 +66,7 @@ async function agregarPaso() {
     if (ultimaGuia) {
       activarRearme();
     }
+
   } catch (error) {
     console.error('[Service] Error de conexión al guardar paso:', error);
     alert('Error de conexión con el servidor.');
@@ -91,7 +92,7 @@ async function activarRearme() {
     }
 
     const data = await response.json();
-    ultimaGuia = data;
+    ultimaGuia = data; 
 
     const lista = document.getElementById('listaPasos');
     lista.innerHTML = '<h3>📘 GUÍA DE REARME (INVERSA)</h3>';
@@ -131,8 +132,9 @@ async function finalizarServicio() {
   }
 
   try {
+
     const response = await fetch(`${API_URL}/${serviceId}/finalizar`, {
-      method: 'PUT',
+      method: 'PATCH',
       headers: { 'Content-Type': 'application/json' }
     });
 
@@ -165,6 +167,7 @@ async function exportarPDF() {
 
   let JsPDFConstructor = null;
 
+  // Soporte para distintas formas de cargar jsPDF
   if (window.jspdf && window.jspdf.jsPDF) {
     JsPDFConstructor = window.jspdf.jsPDF;
   } else if (window.jsPDF) {
@@ -216,3 +219,4 @@ document.addEventListener('DOMContentLoaded', () => {
     label.textContent = id;
   }
 });
+
