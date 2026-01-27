@@ -1,4 +1,4 @@
-const API_URL = '/api/services';
+const API_URL = '/api/services'; 
 
 let ultimaGuia = null;
 
@@ -6,13 +6,11 @@ function getServiceId() {
   const params = new URLSearchParams(window.location.search);
   const idFromUrl = params.get('id');
 
-  // Si viene por query string, lo guardamos en localStorage
   if (idFromUrl) {
     localStorage.setItem('serviceId', idFromUrl);
     return idFromUrl;
   }
 
-  // Si no, lo leemos desde localStorage
   return localStorage.getItem('serviceId');
 }
 
@@ -93,7 +91,7 @@ async function activarRearme() {
     }
 
     const data = await response.json();
-    ultimaGuia = data; // Guardamos para exportar a PDF luego
+    ultimaGuia = data;
 
     const lista = document.getElementById('listaPasos');
     lista.innerHTML = '<h3>📘 GUÍA DE REARME (INVERSA)</h3>';
@@ -133,9 +131,9 @@ async function finalizarServicio() {
   }
 
   try {
-
     const response = await fetch(`${API_URL}/${serviceId}/finalizar`, {
-      method: 'PATCH'
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' }
     });
 
     if (!response.ok) {
