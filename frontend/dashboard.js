@@ -9,6 +9,7 @@ async function crearServicio() {
         return;
     }
 
+
     const cliente = {
         rut: '12.345.678-9',
         nombre: 'Empresa Demo'
@@ -31,28 +32,37 @@ async function crearServicio() {
 
         if (!response.ok) {
             const err = await response.text();
-            console.error(err);
+            console.error('[Dashboard] Error al crear servicio:', err);
             alert('Error al crear el servicio');
             return;
         }
 
         const data = await response.json();
+        console.log('[Dashboard] Servicio creado:', data);
 
-        
+
         localStorage.setItem('serviceId', data._id);
 
-        
-        window.location.href = 'service.html';
+
+        window.location.href = `service.html?id=${data._id}`;
 
     } catch (error) {
-        console.error(error);
+        console.error('[Dashboard] Error de conexión:', error);
         alert('Error de conexión con el servidor');
     }
 }
 
 async function verRearme() {
     const input = document.getElementById('serviceId');
-    const serviceId = input.value.trim();
+    let serviceId = input.value.trim();
+
+    if (!serviceId) {
+        const lastId = localStorage.getItem('serviceId');
+        if (lastId) {
+            serviceId = lastId;
+            input.value = lastId;
+        }
+    }
 
     if (!serviceId) {
         alert('Debe ingresar el ID del servicio');
@@ -60,7 +70,7 @@ async function verRearme() {
         return;
     }
 
-    console.log('[Dashboard] Consultando rearme para ID:', serviceId);
+    console.log('[Dashboard] Buscando rearme para ID:', serviceId);
 
     try {
         const res = await fetch(`${API_URL}/${serviceId}/rearme`);
@@ -68,15 +78,15 @@ async function verRearme() {
         if (!res.ok) {
             const errText = await res.text();
             console.error('[Dashboard] Error HTTP:', res.status, errText);
-            alert('No se pudo obtener la guía de rearme. Revise que el ID exista.');
+            alert('No se pudo obtener la guía de rearme (revise consola del navegador).');
             return;
         }
 
         const data = await res.json();
-        console.log('[Dashboard] Datos rearme:', data);
+        console.log('[Dashboard] Datos recibidos:', data);
 
         const lista = document.getElementById('listaPasos');
-        lista.innerHTML = '<h3>⬇️ GUÍA DE REARME (INVERSA) ⬇️</h3>';
+        lista.innerHTML = '<h3>📘 GUÍA DE REARME (INVERSA)</h3>';
 
         if (!data.pasos || data.pasos.length === 0) {
             lista.innerHTML += '<p>No hay pasos registrados para este servicio.</p>';
@@ -95,6 +105,15 @@ async function verRearme() {
 
     } catch (error) {
         console.error('[Dashboard] Error inesperado:', error);
-        alert('Error inesperado al generar la guía. Revise la consola.');
+        alert('Error inesperado al generar la guía (ver consola).');
     }
 }
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const lastId = localStorage.getItem('serviceId');
+    const input = document.getElementById('serviceId');
+    if (input && lastId) {
+        input.value = lastId;
+    }
+});
