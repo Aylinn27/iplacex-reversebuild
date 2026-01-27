@@ -1,6 +1,5 @@
 const API_URL = '/api/services';
 
-
 function getServiceId() {
     return localStorage.getItem('serviceId');
 }
@@ -14,34 +13,31 @@ const convertToBase64 = (file) => {
     });
 };
 
-
 document.addEventListener('DOMContentLoaded', () => {
-    const serviceId = getServiceId();
-    const info = document.getElementById('serviceInfo');
+    const id = getServiceId();
 
-    if (!serviceId) {
-        alert('No hay servicio activo. Vuelve al dashboard.');
+    if (!id) {
+        alert('No hay servicio activo. Vuelve al panel y crea uno desde "Nuevo Servicio".');
         window.location.href = 'dashboard.html';
         return;
     }
 
-    info.innerText = `Servicio activo ID: ${serviceId}`;
+    const lbl = document.getElementById('serviceIdLabel');
+    if (lbl) lbl.textContent = id;
 });
 
-
 async function agregarPaso() {
-    const desc = document.getElementById('descPaso').value;
-    const fileInput = document.getElementById('fotoPaso');
-    const token = localStorage.getItem('token');
-    const serviceId = getServiceId();
-
-    if (!desc) {
-        alert('Debe escribir una descripción');
+    const id = getServiceId();
+    if (!id) {
+        alert('No hay servicio activo');
         return;
     }
 
-    if (!serviceId) {
-        alert('Servicio no válido');
+    const desc = document.getElementById('descPaso').value.trim();
+    const fileInput = document.getElementById('fotoPaso');
+
+    if (!desc) {
+        alert('Debe escribir una descripción');
         return;
     }
 
@@ -50,50 +46,58 @@ async function agregarPaso() {
         imgBase64 = await convertToBase64(fileInput.files[0]);
     }
 
-    const response = await fetch(`${API_URL}/${serviceId}/pasos`, {
+    const res = await fetch(`${API_URL}/${id}/pasos`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ desc, img: imgBase64 })
     });
 
-    if (!response.ok) {
-        const err = await response.text();
-        console.error(err);
-        alert('Error al guardar paso');
+    if (!res.ok) {
+        const err = await res.text();
+        console.error('[agregarPaso] Error:', err);
+        alert('Error al guardar el paso');
         return;
     }
 
-    alert('Paso guardado correctamente ✅');
+    alert('Paso guardado con éxito ✅');
     document.getElementById('descPaso').value = '';
     fileInput.value = '';
 }
 
-
 async function activarRearme() {
-    const serviceId = getServiceId();
+    const id = getServiceId();
+    if (!id) {
+        alert('No hay servicio activo');
+        return;
+    }
 
-    const response = await fetch(`${API_URL}/${serviceId}/rearme`);
-    const data = await response.json();
+    const res = await fetch(`${API_URL}/${id}/rearme`);
+    if (!res.ok) {
+        const err = await res.text();
+        console.error('[activarRearme] Error:', err);
+        alert('No se pudo obtener la guía de rearme');
+        return;
+    }
 
+    const data = await res.json();
     const lista = document.getElementById('listaPasos');
     lista.innerHTML = '<h3>⬇️ GUÍA DE REARME (INVERSA) ⬇️</h3>';
 
+    if (!data.pasos || data.pasos.length === 0) {
+        lista.innerHTML += '<p>No hay pasos registrados.</p>';
+        return;
+    }
+
     data.pasos.forEach(paso => {
-        lista.innerHTML += `
-            <div class="card">
-                <p><strong>Paso ${paso.ord}</strong></p>
-                <p>${paso.desc}</p>
-                ${paso.img ? `<img src="${paso.img}" class="preview">` : ''}
-            </div>
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+            <p><strong>Paso ${paso.ord}:</strong> ${paso.desc}</p>
+            ${paso.img ? `<img src="${paso.img}" class="preview">` : ''}
         `;
+        lista.appendChild(card);
     });
-
-    document.getElementById('formDesarme').style.display = 'none';
 }
-
 
 async function finalizarServicio() {
     const id = getServiceId();
@@ -102,30 +106,19 @@ async function finalizarServicio() {
         return;
     }
 
-    const confirmacion = confirm('¿Está seguro que desea finalizar el servicio?');
-    if (!confirmacion) return;
+    const res = await fetch(`${API_URL}/${id}/finalizar`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' }
+    });
 
-    try {
-        const res = await fetch(`${API_URL}/${id}/finalizar`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' }
-        });
-
-        if (!res.ok) {
-            const err = await res.text();
-            console.error(err);
-            alert('Error al finalizar el servicio');
-            return;
-        }
-
-        const data = await res.json();
-        alert('Servicio finalizado 🚀');
-
-        localStorage.removeItem('serviceId');
-        window.location.href = 'dashboard.html';
-
-    } catch (error) {
-        console.error(error);
-        alert('Error de conexión con el servidor');
+    if (!res.ok) {
+        const err = await res.text();
+        console.error('[finalizarServicio] Error:', err);
+        alert('No se pudo finalizar el servicio');
+        return;
     }
+
+    alert('Servicio finalizado 🚀');
+    localStorage.removeItem('serviceId');
+    window.location.href = 'dashboard.html';
 }
