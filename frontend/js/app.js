@@ -63,8 +63,6 @@ async function agregarPaso() {
     document.getElementById('descPaso').value = '';
     fileInput.value = '';
 
-
-
   } catch (error) {
     console.error('[Service] Error de conexión al guardar paso:', error);
     alert('Error de conexión con el servidor.');
@@ -90,7 +88,7 @@ async function activarRearme() {
     }
 
     const data = await response.json();
-    ultimaGuia = data;   
+    ultimaGuia = data; 
 
     const lista = document.getElementById('listaPasos');
     lista.innerHTML = '<h3>📘 GUÍA DE REARME (INVERSA)</h3>';
@@ -157,18 +155,27 @@ async function finalizarServicio() {
 async function exportarPDF() {
   const serviceId = getServiceId();
 
+  // Debe existir una guía cargada (activarRearme)
   if (!ultimaGuia || !ultimaGuia.pasos || ultimaGuia.pasos.length === 0) {
     alert('Primero debes generar la guía de rearme (botón "Iniciar Rearme").');
     return;
   }
 
-  if (!window.jspdf || !window.jspdf.jsPDF) {
-    alert('No se encontró la librería jsPDF.');
+
+  let JsPDFConstructor = null;
+
+  if (window.jspdf && window.jspdf.jsPDF) {
+
+    JsPDFConstructor = window.jspdf.jsPDF;
+  } else if (window.jsPDF) {
+
+    JsPDFConstructor = window.jsPDF;
+  } else {
+    alert('No se encontró la librería jsPDF. Verifica el <script> en service.html.');
     return;
   }
 
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
+  const doc = new JsPDFConstructor();
 
   let y = 20;
 
@@ -195,7 +202,6 @@ async function exportarPDF() {
 
   doc.save(`rearme_${serviceId || 'servicio'}.pdf`);
 }
-
 
 document.addEventListener('DOMContentLoaded', () => {
   const id = getServiceId();
