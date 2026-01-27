@@ -9,12 +9,13 @@
 <body>
     <div class="container">
         <h2>🛠️ Servicio en Curso</h2>
-
         <p>
-            Servicio activo ID:
-            <span id="serviceIdLabel" style="font-family: monospace;"></span>
+            Servicio activo ID: 
+            <span id="serviceIdLabel"></span>
         </p>
 
+        <div id="infoEquipo"></div>
+        
         <div id="formDesarme">
             <h3>Nuevo Paso</h3>
             <input type="text" id="descPaso" placeholder="Descripción (ej. Retirar tornillo)">
@@ -24,11 +25,19 @@
             
             <button onclick="agregarPaso()">Guardar Paso</button>
             <button onclick="activarRearme()" style="background-color: #03dac6;">🔄 Iniciar Rearme</button>
-            <button onclick="finalizarServicio()" style="background-color:#cf6679;">Finalizar Servicio</button>
+            <button onclick="finalizarServicio()" style="background-color: #cf6679;">Finalizar Servicio</button>
         </div>
 
-        <div id="listaPasos" style="margin-top: 20px;"></div>
+        <div id="listaPasos"></div>
+
+        <div style="margin-top: 15px;">
+            <button onclick="exportarPDF()">⬇️ Descargar Guía en PDF</button>
+        </div>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
+            integrity="sha512-Ykq7QySgZcQfr8bv2fabBM4ZLQPOkkzuTUMr7bcwpPiZltIArxiJrwhcS6KMXwLP6i7F+Gqv+Z1sJQK+5CRf5Q==" 
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <script src="js/app.js"></script>
 </body>
