@@ -90,7 +90,7 @@ async function activarRearme() {
     }
 
     const data = await response.json();
-    ultimaGuia = data;   // 👈 guardamos la guía para usarla luego en el PDF
+    ultimaGuia = data;   
 
     const lista = document.getElementById('listaPasos');
     lista.innerHTML = '<h3>📘 GUÍA DE REARME (INVERSA)</h3>';
