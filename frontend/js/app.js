@@ -1,7 +1,8 @@
 const API_URL = '/api/services';
 
-function getServiceId() {
+let ultimaGuia = null; 
 
+function getServiceId() {
   const params = new URLSearchParams(window.location.search);
   const idFromUrl = params.get('id');
 
@@ -63,12 +64,12 @@ async function agregarPaso() {
     fileInput.value = '';
 
 
+
   } catch (error) {
     console.error('[Service] Error de conexión al guardar paso:', error);
     alert('Error de conexión con el servidor.');
   }
 }
-
 
 async function activarRearme() {
   const serviceId = getServiceId();
@@ -89,6 +90,8 @@ async function activarRearme() {
     }
 
     const data = await response.json();
+    ultimaGuia = data;   // 👈 guardamos la guía para usarla luego en el PDF
+
     const lista = document.getElementById('listaPasos');
     lista.innerHTML = '<h3>📘 GUÍA DE REARME (INVERSA)</h3>';
 
@@ -115,7 +118,6 @@ async function activarRearme() {
   }
 }
 
-
 async function finalizarServicio() {
   const serviceId = getServiceId();
   if (!serviceId) {
@@ -130,7 +132,7 @@ async function finalizarServicio() {
 
   try {
     const response = await fetch(`${API_URL}/${serviceId}/finalizar`, {
-      method: 'PUT'   
+      method: 'PUT'
     });
 
     if (!response.ok) {
@@ -152,6 +154,49 @@ async function finalizarServicio() {
   }
 }
 
+async function exportarPDF() {
+  const serviceId = getServiceId();
+
+  if (!ultimaGuia || !ultimaGuia.pasos || ultimaGuia.pasos.length === 0) {
+    alert('Primero debes generar la guía de rearme (botón "Iniciar Rearme").');
+    return;
+  }
+
+  if (!window.jspdf || !window.jspdf.jsPDF) {
+    alert('No se encontró la librería jsPDF.');
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  let y = 20;
+
+  doc.setFontSize(14);
+  doc.text('Guía de Rearme (Inversa)', 10, y);
+  y += 8;
+
+  doc.setFontSize(10);
+  doc.text(`ID Servicio: ${serviceId || ''}`, 10, y);
+  y += 8;
+
+  ultimaGuia.pasos.forEach((paso) => {
+    const texto = `Paso ${paso.ord}: ${paso.desc}`;
+    const lines = doc.splitTextToSize(texto, 180);
+
+    if (y + lines.length * 6 > 280) {
+      doc.addPage();
+      y = 20;
+    }
+
+    doc.text(lines, 10, y);
+    y += lines.length * 6 + 4;
+  });
+
+  doc.save(`rearme_${serviceId || 'servicio'}.pdf`);
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
   const id = getServiceId();
 
@@ -166,3 +211,4 @@ document.addEventListener('DOMContentLoaded', () => {
     label.textContent = id;
   }
 });
+
