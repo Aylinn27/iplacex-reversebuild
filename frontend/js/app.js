@@ -1,16 +1,18 @@
 const API_URL = '/api/services';
 
-let ultimaGuia = null; 
+let ultimaGuia = null;
 
 function getServiceId() {
   const params = new URLSearchParams(window.location.search);
   const idFromUrl = params.get('id');
 
+  // Si viene por query string, lo guardamos en localStorage
   if (idFromUrl) {
     localStorage.setItem('serviceId', idFromUrl);
     return idFromUrl;
   }
 
+  // Si no, lo leemos desde localStorage
   return localStorage.getItem('serviceId');
 }
 
@@ -19,7 +21,7 @@ const convertToBase64 = (file) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
+    reader.onerror = (error) => reject(error);
   });
 };
 
@@ -63,6 +65,9 @@ async function agregarPaso() {
     document.getElementById('descPaso').value = '';
     fileInput.value = '';
 
+    if (ultimaGuia) {
+      activarRearme();
+    }
   } catch (error) {
     console.error('[Service] Error de conexión al guardar paso:', error);
     alert('Error de conexión con el servidor.');
@@ -88,7 +93,7 @@ async function activarRearme() {
     }
 
     const data = await response.json();
-    ultimaGuia = data; 
+    ultimaGuia = data; // Guardamos para exportar a PDF luego
 
     const lista = document.getElementById('listaPasos');
     lista.innerHTML = '<h3>📘 GUÍA DE REARME (INVERSA)</h3>';
@@ -98,7 +103,7 @@ async function activarRearme() {
       return;
     }
 
-    data.pasos.forEach(paso => {
+    data.pasos.forEach((paso) => {
       const card = document.createElement('div');
       card.className = 'card';
       card.style.marginTop = '10px';
@@ -109,7 +114,6 @@ async function activarRearme() {
       `;
       lista.appendChild(card);
     });
-
   } catch (error) {
     console.error('[Service] Error de conexión al cargar rearme:', error);
     alert('Error inesperado al obtener la guía de rearme.');
@@ -129,8 +133,9 @@ async function finalizarServicio() {
   }
 
   try {
+
     const response = await fetch(`${API_URL}/${serviceId}/finalizar`, {
-      method: 'PUT'
+      method: 'PATCH'
     });
 
     if (!response.ok) {
@@ -143,9 +148,9 @@ async function finalizarServicio() {
     alert('Servicio finalizado correctamente ✅');
 
     localStorage.removeItem('serviceId');
+    ultimaGuia = null;
 
     window.location.href = 'dashboard.html';
-
   } catch (error) {
     console.error('[Service] Error de conexión al finalizar servicio:', error);
     alert('Error de conexión con el servidor.');
@@ -155,20 +160,16 @@ async function finalizarServicio() {
 async function exportarPDF() {
   const serviceId = getServiceId();
 
-  // Debe existir una guía cargada (activarRearme)
   if (!ultimaGuia || !ultimaGuia.pasos || ultimaGuia.pasos.length === 0) {
     alert('Primero debes generar la guía de rearme (botón "Iniciar Rearme").');
     return;
   }
 
-
   let JsPDFConstructor = null;
 
   if (window.jspdf && window.jspdf.jsPDF) {
-
     JsPDFConstructor = window.jspdf.jsPDF;
   } else if (window.jsPDF) {
-
     JsPDFConstructor = window.jsPDF;
   } else {
     alert('No se encontró la librería jsPDF. Verifica el <script> en service.html.');
@@ -217,4 +218,3 @@ document.addEventListener('DOMContentLoaded', () => {
     label.textContent = id;
   }
 });
-
