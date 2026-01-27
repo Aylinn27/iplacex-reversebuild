@@ -1,6 +1,6 @@
 const API_URL = '/api/services';
 
-let ultimaGuia = null; 
+let ultimaGuia = null;
 
 function getServiceId() {
   const params = new URLSearchParams(window.location.search);
@@ -66,7 +66,6 @@ async function agregarPaso() {
     if (ultimaGuia) {
       activarRearme();
     }
-
   } catch (error) {
     console.error('[Service] Error de conexión al guardar paso:', error);
     alert('Error de conexión con el servidor.');
@@ -92,7 +91,7 @@ async function activarRearme() {
     }
 
     const data = await response.json();
-    ultimaGuia = data; 
+    ultimaGuia = data;
 
     const lista = document.getElementById('listaPasos');
     lista.innerHTML = '<h3>📘 GUÍA DE REARME (INVERSA)</h3>';
@@ -132,9 +131,8 @@ async function finalizarServicio() {
   }
 
   try {
-
     const response = await fetch(`${API_URL}/${serviceId}/finalizar`, {
-      method: 'PATCH',
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' }
     });
 
@@ -167,7 +165,6 @@ async function exportarPDF() {
 
   let JsPDFConstructor = null;
 
-  // Soporte para distintas formas de cargar jsPDF
   if (window.jspdf && window.jspdf.jsPDF) {
     JsPDFConstructor = window.jspdf.jsPDF;
   } else if (window.jsPDF) {
@@ -180,6 +177,9 @@ async function exportarPDF() {
   const doc = new JsPDFConstructor();
 
   let y = 20;
+  const margenSup = 20;
+  const margenInf = 280;
+  const anchoTexto = 180;
 
   doc.setFontSize(14);
   doc.text('Guía de Rearme (Inversa)', 10, y);
@@ -189,18 +189,35 @@ async function exportarPDF() {
   doc.text(`ID Servicio: ${serviceId || ''}`, 10, y);
   y += 8;
 
-  ultimaGuia.pasos.forEach((paso) => {
+  for (const paso of ultimaGuia.pasos) {
     const texto = `Paso ${paso.ord}: ${paso.desc}`;
-    const lines = doc.splitTextToSize(texto, 180);
+    const lines = doc.splitTextToSize(texto, anchoTexto);
+    const altoTexto = lines.length * 6;
 
-    if (y + lines.length * 6 > 280) {
+    if (y + altoTexto > margenInf) {
       doc.addPage();
-      y = 20;
+      y = margenSup;
     }
 
     doc.text(lines, 10, y);
-    y += lines.length * 6 + 4;
-  });
+    y += altoTexto + 4;
+
+    if (paso.img) {
+      const isJpeg = paso.img.startsWith('data:image/jpeg') || paso.img.startsWith('data:image/jpg');
+      const imgType = isJpeg ? 'JPEG' : 'PNG';
+
+      const imgWidth = 100;
+      const imgHeight = 60;
+
+      if (y + imgHeight > margenInf) {
+        doc.addPage();
+        y = margenSup;
+      }
+
+      doc.addImage(paso.img, imgType, 10, y, imgWidth, imgHeight);
+      y += imgHeight + 6;
+    }
+  }
 
   doc.save(`rearme_${serviceId || 'servicio'}.pdf`);
 }
@@ -219,4 +236,3 @@ document.addEventListener('DOMContentLoaded', () => {
     label.textContent = id;
   }
 });
-
