@@ -8,7 +8,6 @@
 </head>
 
 <body>
-
     <div class="container">
 
         <!-- Encabezado -->
@@ -24,12 +23,12 @@
         <p>Bienvenido a <strong>Soluciones S.A.</strong></p>
         <hr style="border-color: #333;">
 
-        <!-- Tarjetas -->
+
         <div style="margin-top: 30px;">
 
             <div 
                 class="card"
-                onclick="window.location.href='service.html'"
+                onclick="crearServicio()"
                 style="cursor: pointer; text-align: center; padding: 30px;">
                 <h1 style="margin: 0;">🛠️</h1>
                 <h3>Nuevo Servicio</h3>
@@ -38,7 +37,7 @@
 
             <div 
                 class="card"
-                style="cursor: pointer; text-align: center; padding: 30px; opacity: 0.5;">
+                style="cursor: not-allowed; text-align: center; padding: 30px; opacity: 0.5;">
                 <h1 style="margin: 0;">📂</h1>
                 <h3>Historial</h3>
                 <p>(Módulo en construcción)</p>
@@ -46,17 +45,15 @@
 
             <div 
                 class="card"
-                style="cursor: pointer; text-align: center; padding: 30px; opacity: 0.5;">
+                style="cursor: not-allowed; text-align: center; padding: 30px; opacity: 0.5;">
                 <h1 style="margin: 0;">⚙️</h1>
                 <h3>Configuración</h3>
                 <p>Gestionar plantillas</p>
             </div>
-
         </div>
 
         <hr style="border-color: #333; margin-top: 30px;">
 
-        <!-- Guía de Rearme -->
         <h3>🔁 Generar Guía de Rearme</h3>
 
         <input 
@@ -72,22 +69,20 @@
 
     </div>
 
-    <!-- Scripts -->
     <script src="dashboard.js"></script>
+
 
     <script>
         const token = localStorage.getItem('token');
-
         if (!token) {
             window.location.href = 'index.html';
         }
 
         function logout() {
             localStorage.removeItem('token');
+            localStorage.removeItem('serviceId');
             window.location.href = 'index.html';
         }
     </script>
-
 </body>
 </html>
-
