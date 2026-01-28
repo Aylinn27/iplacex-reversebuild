@@ -1,8 +1,15 @@
+// backend/routes/auth.js
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+
+function resolverRol(email, roleFromDb) {
+
+  if (email === 'admin@soluciones.cl') return 'admin';
+  return roleFromDb || 'tecnico';
+}
 
 router.post('/register', async (req, res) => {
   const { email, password, role } = req.body;
@@ -13,11 +20,9 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ msg: 'El usuario ya existe' });
     }
 
-    user = new User({
-      email,
-      password,
-      role: role || 'tecnico'
-    });
+    const finalRole = resolverRol(email, role);
+
+    user = new User({ email, password, role: finalRole });
 
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
@@ -27,7 +32,7 @@ router.post('/register', async (req, res) => {
     const payload = {
       user: {
         id: user.id,
-        role: user.role
+        role: finalRole
       }
     };
 
@@ -37,7 +42,11 @@ router.post('/register', async (req, res) => {
       { expiresIn: '8h' },
       (err, token) => {
         if (err) throw err;
-        res.json({ token, role: user.role });
+        res.json({
+          token,
+          role: finalRole,
+          email: user.email
+        });
       }
     );
   } catch (err) {
@@ -60,10 +69,12 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ msg: 'Credenciales inválidas' });
     }
 
+    const finalRole = resolverRol(user.email, user.role);
+
     const payload = {
       user: {
         id: user.id,
-        role: user.role
+        role: finalRole
       }
     };
 
@@ -73,7 +84,11 @@ router.post('/login', async (req, res) => {
       { expiresIn: '8h' },
       (err, token) => {
         if (err) throw err;
-        res.json({ token, role: user.role });
+        res.json({
+          token,
+          role: finalRole,
+          email: user.email
+        });
       }
     );
   } catch (err) {
