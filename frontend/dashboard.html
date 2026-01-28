@@ -6,13 +6,20 @@
     <title>Panel Técnico - ReverseBuild</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
-
 <body>
+
     <div class="container">
 
-        <!-- Encabezado -->
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2 style="color: #03dac6;">Panel Técnico</h2>
+            <div>
+                <h2 style="color: #03dac6;">Panel Técnico</h2>
+                <p style="margin: 0;">
+                    Bienvenido a <strong>Soluciones S.A.</strong>
+                </p>
+                <p style="margin: 0; font-size: 0.9em;">
+                    Perfil: <span id="roleBadge"></span>
+                </p>
+            </div>
             <button 
                 onclick="logout()" 
                 style="width: auto; background-color: #cf6679; padding: 10px;">
@@ -20,13 +27,12 @@
             </button>
         </div>
 
-        <p>Bienvenido a <strong>Soluciones S.A.</strong></p>
         <hr style="border-color: #333;">
-
 
         <div style="margin-top: 30px;">
 
             <div 
+                id="cardNuevo"
                 class="card"
                 onclick="crearServicio()"
                 style="cursor: pointer; text-align: center; padding: 30px;">
@@ -36,41 +42,45 @@
             </div>
 
             <div 
+                id="cardHist"
                 class="card"
                 style="cursor: not-allowed; text-align: center; padding: 30px; opacity: 0.5;">
                 <h1 style="margin: 0;">📂</h1>
                 <h3>Historial</h3>
                 <p>(Módulo en construcción)</p>
             </div>
-
+>
             <div 
+                id="cardConfig"
                 class="card"
                 style="cursor: not-allowed; text-align: center; padding: 30px; opacity: 0.5;">
                 <h1 style="margin: 0;">⚙️</h1>
                 <h3>Configuración</h3>
                 <p>Gestionar plantillas</p>
             </div>
+
         </div>
 
         <hr style="border-color: #333; margin-top: 30px;">
 
-        <h3>🔁 Generar Guía de Rearme</h3>
+        <div id="seccionRearme">
+            <h3>🔁 Generar Guía de Rearme</h3>
 
-        <input 
-            type="text"
-            id="serviceId"
-            placeholder="Ingrese ID del servicio"
-            style="width: 100%; margin-bottom: 10px;"
-        >
+            <input 
+                type="text"
+                id="serviceId"
+                placeholder="Ingrese ID del servicio"
+                style="width: 100%; margin-bottom: 10px;"
+            >
 
-        <button onclick="verRearme()">Ver Guía de Rearme</button>
+            <button id="btnRearme" onclick="verRearme()">Ver Guía de Rearme</button>
 
-        <ul id="listaPasos" style="margin-top: 20px;"></ul>
+            <ul id="listaPasos" style="margin-top: 20px;"></ul>
+        </div>
 
     </div>
 
     <script src="dashboard.js"></script>
-
 
     <script>
         const token = localStorage.getItem('token');
@@ -78,11 +88,60 @@
             window.location.href = 'index.html';
         }
 
+        const role = localStorage.getItem('role') || 'tecnico';
+
+        function configurarDashboardPorRol() {
+            const roleBadge = document.getElementById('roleBadge');
+            if (roleBadge) {
+                roleBadge.textContent = (role === 'admin') ? 'Administrador' : 'Técnico';
+            }
+
+            const cardNuevo   = document.getElementById('cardNuevo');
+            const cardHist    = document.getElementById('cardHist');
+            const cardConfig  = document.getElementById('cardConfig');
+            const seccionRearme = document.getElementById('seccionRearme');
+
+            if (role === 'tecnico') {
+
+                if (seccionRearme) {
+                    seccionRearme.style.display = 'none';
+                }
+
+                if (cardHist) {
+                    cardHist.style.opacity = '0.4';
+                    cardHist.style.cursor = 'not-allowed';
+                }
+
+                if (cardConfig) {
+                    cardConfig.style.opacity = '0.4';
+                    cardConfig.style.cursor = 'not-allowed';
+                }
+
+            } else if (role === 'admin') {
+
+                if (cardNuevo) {
+                    cardNuevo.style.opacity = '0.4';
+                    cardNuevo.style.cursor = 'not-allowed';
+                    cardNuevo.onclick = null; 
+                }
+
+                if (seccionRearme) {
+                    seccionRearme.style.display = 'block';
+                }
+            }
+        }
+
+        configurarDashboardPorRol();
+
         function logout() {
             localStorage.removeItem('token');
+            localStorage.removeItem('role');
+            localStorage.removeItem('email');
             localStorage.removeItem('serviceId');
             window.location.href = 'index.html';
         }
     </script>
+
 </body>
 </html>
+
