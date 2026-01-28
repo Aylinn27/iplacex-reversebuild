@@ -46,9 +46,8 @@
 
                 if (res.ok) {
                     localStorage.setItem('token', data.token);
-                    const role = data.role || 'tecnico';
-                    localStorage.setItem('role', role);
-                    localStorage.setItem('email', email);
+                    localStorage.setItem('role', data.role || 'tecnico');
+                    localStorage.setItem('email', data.email || email);
 
                     window.location.href = 'dashboard.html';
                 } else {
@@ -67,13 +66,13 @@
         }
 
         async function crearUsuarioPrueba() {
-            const email = prompt("Email nuevo:");
+            const email = prompt("Email nuevo (por ejemplo admin@soluciones.cl):");
             const password = prompt("Contraseña nueva:");
             if (email && password) {
                 const res = await fetch('/api/auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password, role: 'admin' })
+                    body: JSON.stringify({ email, password })
                 });
                 if (res.ok) alert("Usuario creado. Ahora inicia sesión.");
                 else alert("Error al crear usuario.");
