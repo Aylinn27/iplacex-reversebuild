@@ -1,6 +1,6 @@
 const API_URL = '/api/services';
 
-let ultimaGuia = null;
+let ultimaGuia = null; 
 
 function getServiceId() {
   const params = new URLSearchParams(window.location.search);
@@ -175,11 +175,7 @@ async function exportarPDF() {
   }
 
   const doc = new JsPDFConstructor();
-
   let y = 20;
-  const margenSup = 20;
-  const margenInf = 280;
-  const anchoTexto = 180;
 
   doc.setFontSize(14);
   doc.text('Guía de Rearme (Inversa)', 10, y);
@@ -191,31 +187,36 @@ async function exportarPDF() {
 
   for (const paso of ultimaGuia.pasos) {
     const texto = `Paso ${paso.ord}: ${paso.desc}`;
-    const lines = doc.splitTextToSize(texto, anchoTexto);
-    const altoTexto = lines.length * 6;
+    const lines = doc.splitTextToSize(texto, 180);
 
-    if (y + altoTexto > margenInf) {
+    if (y + lines.length * 6 > 270) {
       doc.addPage();
-      y = margenSup;
+      y = 20;
     }
 
     doc.text(lines, 10, y);
-    y += altoTexto + 4;
+    y += lines.length * 6 + 4;
 
     if (paso.img) {
-      const isJpeg = paso.img.startsWith('data:image/jpeg') || paso.img.startsWith('data:image/jpg');
-      const imgType = isJpeg ? 'JPEG' : 'PNG';
+      const imgData = paso.img;
+      const isPng = imgData.startsWith('data:image/png');
+      const format = isPng ? 'PNG' : 'JPEG';
 
-      const imgWidth = 100;
-      const imgHeight = 60;
+      const imgWidth = 80;   
+      const imgHeight = 45;  
 
-      if (y + imgHeight > margenInf) {
+      if (y + imgHeight > 270) {
         doc.addPage();
-        y = margenSup;
+        y = 20;
       }
 
-      doc.addImage(paso.img, imgType, 10, y, imgWidth, imgHeight);
-      y += imgHeight + 6;
+      try {
+        doc.addImage(imgData, format, 10, y, imgWidth, imgHeight);
+        y += imgHeight + 6;
+      } catch (e) {
+        console.error('Error al agregar imagen al PDF:', e);
+
+      }
     }
   }
 
@@ -236,3 +237,4 @@ document.addEventListener('DOMContentLoaded', () => {
     label.textContent = id;
   }
 });
+
