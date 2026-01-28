@@ -1,6 +1,6 @@
 const API_URL = '/api/services';
 
-let ultimaGuia = null; 
+let ultimaGuia = null;
 
 function getServiceId() {
   const params = new URLSearchParams(window.location.search);
@@ -170,7 +170,7 @@ async function exportarPDF() {
   } else if (window.jsPDF) {
     JsPDFConstructor = window.jsPDF;
   } else {
-    alert('No se encontró la librería jsPDF. Verifica el <script> en service.html.');
+    alert('No se encontró la librería jsPDF.');
     return;
   }
 
@@ -189,34 +189,39 @@ async function exportarPDF() {
     const texto = `Paso ${paso.ord}: ${paso.desc}`;
     const lines = doc.splitTextToSize(texto, 180);
 
-    if (y + lines.length * 6 > 270) {
+    if (y + lines.length * 6 > 260) {
       doc.addPage();
       y = 20;
     }
 
     doc.text(lines, 10, y);
-    y += lines.length * 6 + 4;
+    y += lines.length * 6 + 2;
 
     if (paso.img) {
-      const imgData = paso.img;
-      const isPng = imgData.startsWith('data:image/png');
-      const format = isPng ? 'PNG' : 'JPEG';
-
-      const imgWidth = 80;   
-      const imgHeight = 45;  
-
-      if (y + imgHeight > 270) {
-        doc.addPage();
-        y = 20;
-      }
-
       try {
-        doc.addImage(imgData, format, 10, y, imgWidth, imgHeight);
+        const img = new Image();
+        img.src = paso.img;
+
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+        });
+
+        const imgWidth = 60;
+        const imgHeight = (img.height * imgWidth) / img.width;
+
+        if (y + imgHeight > 260) {
+          doc.addPage();
+          y = 20;
+        }
+
+        doc.addImage(img, 'JPEG', 10, y, imgWidth, imgHeight);
         y += imgHeight + 6;
       } catch (e) {
-        console.error('Error al agregar imagen al PDF:', e);
-
+        console.warn('No se pudo agregar una imagen al PDF:', e);
       }
+    } else {
+      y += 4;
     }
   }
 
@@ -237,4 +242,3 @@ document.addEventListener('DOMContentLoaded', () => {
     label.textContent = id;
   }
 });
-
