@@ -30,12 +30,10 @@
     </div>
 
     <script>
-        fetch('/api/auth/login')
-
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
 
             try {
                 const res = await fetch('/api/auth/login', {
@@ -48,11 +46,16 @@
 
                 if (res.ok) {
                     localStorage.setItem('token', data.token);
+                    const role = data.role || 'tecnico';
+                    localStorage.setItem('role', role);
+                    localStorage.setItem('email', email);
+
                     window.location.href = 'dashboard.html';
                 } else {
                     mostrarError(data.msg || 'Error al ingresar');
                 }
             } catch (error) {
+                console.error(error);
                 mostrarError('Error de conexión con el servidor');
             }
         });
@@ -66,13 +69,13 @@
         async function crearUsuarioPrueba() {
             const email = prompt("Email nuevo:");
             const password = prompt("Contraseña nueva:");
-            if(email && password) {
+            if (email && password) {
                 const res = await fetch('/api/auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({ email, password, role: 'admin' })
                 });
-                if(res.ok) alert("Usuario creado. Ahora inicia sesión.");
+                if (res.ok) alert("Usuario creado. Ahora inicia sesión.");
                 else alert("Error al crear usuario.");
             }
         }
