@@ -1,42 +1,372 @@
+/* ==================== FUENTES ========================= */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+/* ==================== VARIABLES (Tu paleta Canva) ======= */
+:root {
+    --verde-principal: #A8B88A;
+    --verde-oscuro: #8FA06F;
+    --beige-claro: #F4EFE6; /* Fondo general de la web */
+    --beige: #E8DDCC;       /* Fondo de secciones destacadas */
+    --beige-oscuro: #DCC9B0;
+    --amarillo: #F2D57E;    /* Botones primarios */
+    --amarillo-hover: #E3C363;
+    --texto: #2B2B2B;
+    --texto-secundario: #6B6B6B;
+    --blanco: #FFFFFF;
+}
+
+/* ==================== ESTILOS GENERALES ================= */
+* {
+    box-sizing: border-box;
+}
+
 body {
-    background-color: #121212; /* Dark Mode Fondo */
-    color: #e0e0e0; /* Texto claro */
-    font-family: Arial, sans-serif;
+    font-family: 'Quicksand', sans-serif;
+    background: var(--beige-claro);
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    color: var(--texto);
+    line-height: 1.6;
 }
 
-.container {
-    max-width: 480px; /* Ancho de móvil */
+h1, h2, h3, .logo {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--texto);
+    margin-top: 0;
+}
+
+/* Contenedor central para que la web no se estire al infinito */
+.container-max {
+    max-width: 1200px;
     margin: 0 auto;
+    padding: 0 20px;
 }
 
-input, button, select {
+/* ==================== NAVBAR (ESTILO CANVA) ============= */
+.main-header {
+    background: var(--verde-principal);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.navbar {
+    padding: 15px 0;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
     width: 100%;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    border: none;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 30px; /* Separación horizontal de los links */
+    list-style: none; /* Quita los puntos de lista */
+    padding: 0;
+    margin: 0;
+}
+
+.nav-menu a {
+    text-decoration: none;
+    color: var(--texto);
+    font-weight: 600;
     font-size: 16px;
+    transition: color 0.3s;
 }
 
-button {
-    background-color: #bb86fc; /* Color primario violeta */
-    color: #000;
-    font-weight: bold;
+.nav-menu a:hover {
+    color: var(--blanco);
+}
+
+.nav-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.hamburger {
+    display: none;
+    background: none;
+    border: none;
     cursor: pointer;
+    flex-direction: column;
+    gap: 5px;
 }
 
-.card {
-    background-color: #1e1e1e;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    border-left: 5px solid #03dac6; /* Acento teal */
+.hamburger span {
+    width: 25px;
+    height: 3px;
+    background-color: var(--texto);
+    border-radius: 2px;
 }
 
-img.preview {
+/* ==================== BOTONES =========================== */
+.btn {
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    gap: 8px;
+}
+
+.btn.primary {
+    background-color: var(--amarillo);
+    color: var(--texto);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.btn.primary:hover {
+    background-color: var(--amarillo-hover);
+    transform: translateY(-2px);
+}
+
+.btn.secondary {
+    background-color: transparent;
+    color: var(--texto);
+    border: 2px solid var(--verde-oscuro);
+}
+
+.btn.secondary:hover {
+    background-color: var(--verde-oscuro);
+    color: var(--blanco);
+}
+
+.btn.small {
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+.btn.large {
+    padding: 14px 32px;
+    font-size: 18px;
+}
+
+/* ==================== HERO SECTION (ESTILO CANVA) ======= */
+.hero {
+    background: var(--beige);
+    padding: 80px 0;
+}
+
+.hero-content-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.hero-content {
+    flex: 1; /* Mitad de la pantalla para el texto */
+}
+
+.hero-title {
+    font-size: 48px;
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+
+.hero-subtitle {
+    font-size: 18px;
+    color: var(--texto-secundario);
+    margin-bottom: 30px;
+    max-width: 90%;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.hero-image {
+    flex: 1; /* Mitad de la pantalla para la imagen */
+    display: flex;
+    justify-content: flex-end;
+}
+
+.hero-image img {
     width: 100%;
-    border-radius: 5px;
-    margin-top: 5px;
+    max-width: 500px;
+    border-radius: 20px; /* Bordes suaves */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    object-fit: cover;
+}
+
+/* ==================== SECCIONES ========================= */
+.module-section {
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.module-section h2 {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: var(--texto-secundario);
+    font-size: 18px;
+    margin-bottom: 40px;
+}
+
+/* ==================== TARJETAS (CURSOS Y RECURSOS) ====== */
+.cursos-container, .library-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.card-grid, .resource-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.course-card, .resource-card {
+    background: var(--blanco);
+    border-radius: 15px;
+    padding: 25px;
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.course-card:hover, .resource-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.course-card h3, .resource-card h3 {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.card-tag {
+    background: var(--amarillo);
+    color: var(--texto);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+/* ==================== FOOTER ============================ */
+.main-footer {
+    background: var(--verde-oscuro);
+    color: var(--blanco);
+    padding: 60px 20px 20px;
+    margin-top: 50px;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+}
+
+.footer-col h4 {
+    color: var(--beige-claro);
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.footer-col ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-col ul li {
+    margin-bottom: 10px;
+}
+
+.footer-col ul a {
+    color: var(--blanco);
+    text-decoration: none;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+
+.footer-col ul a:hover {
+    opacity: 1;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+/* ==================== DISEÑO RESPONSIVO (MÓVILES) ======= */
+@media (max-width: 992px) {
+    .hero-title {
+        font-size: 38px;
+    }
+    .hero-content-wrapper {
+        gap: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Navbar en móvil */
+    .nav-menu, .nav-actions {
+        display: none; /* Se ocultan para un menú hamburguesa */
+    }
+    .hamburger {
+        display: flex;
+    }
+
+    /* Hero en móvil: Imagen arriba, texto abajo */
+    .hero {
+        padding: 40px 0;
+    }
+    .hero-content-wrapper {
+        flex-direction: column-reverse;
+        text-align: center;
+    }
+    .hero-subtitle {
+        margin: 0 auto 30px;
+    }
+    .hero-actions {
+        justify-content: center;
+    }
+    
+    .module-section {
+        padding: 50px 20px;
+    }
 }
